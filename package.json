@@ -9,18 +9,23 @@
     "lint": "next lint"
   },
   "dependencies": {
+    "@cardano-foundation/cardano-connect-with-wallet": "^0.2.9",
+    "@cardano-foundation/cardano-connect-with-wallet-core": "^0.2.5",
+    "@lucid-evolution/lucid": "^0.3.36",
+    "dotenv": "^16.4.5",
+    "next": "14.2.11",
     "react": "^18",
-    "react-dom": "^18",
-    "next": "14.2.11"
+    "react-dom": "^18"
   },
   "devDependencies": {
-    "typescript": "^5",
     "@types/node": "^20",
     "@types/react": "^18",
     "@types/react-dom": "^18",
+    "@types/webpack": "^5.28.5",
+    "eslint": "^8",
+    "eslint-config-next": "14.2.11",
     "postcss": "^8",
     "tailwindcss": "^3.4.1",
-    "eslint": "^8",
-    "eslint-config-next": "14.2.11"
+    "typescript": "^5"
   }
 }
