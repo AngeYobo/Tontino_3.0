@@ -7,7 +7,7 @@
 
   outputs = { self, nixpkgs }: {
     devShells = {
-      x86_64-linux = nixpkgs.legacyPackages.x86_64-linux.stdenv.mkShell {
+      x86_64-linux = nixpkgs.lib.mkShell {
         buildInputs = with nixpkgs.legacyPackages.x86_64-linux; [
           nodejs-18_x      # Node.js 18.x version
           pnpm             # pnpm package manager
