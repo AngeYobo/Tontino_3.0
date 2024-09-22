@@ -1,7 +1,3 @@
-Here is the updated version of your README with the requested changes, including removing the detailed descriptions and inviting the dev community:
-
----
-
 # **Tontine Dapp - Réinventer l'Épargne Communautaire avec la Blockchain Cardano**
 
 ## **Introduction**
@@ -44,7 +40,3 @@ Open [http://localhost:3000](http://localhost:3000) with your browser to see the
 ## **Learn More**
 - **Next.js Documentation** - Learn about Next.js features and API.
 - **Next.js GitHub** - Your feedback and contributions are welcome!
-
----
-
-This README is now optimized for brevity and invites the developer community to engage and contribute to the project. You can now update this on your repository!
