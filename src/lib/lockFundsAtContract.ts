@@ -7,7 +7,7 @@ dotenv.config();
 // Initialize Lucid with Blockfrost
 export const initLucid = async () => {
   const blockfrostApiKey = process.env.BLOCKFROST_API_KEY!;
-  const networkEnv = process.env.NETWORK_ENV! as Network; // Cast as Network type
+  const networkEnv = process.env.NEXT_PUBLIC_NETWORK_ENV! as Network; // Cast as Network type
 
   if (!blockfrostApiKey || !networkEnv) {
     throw new Error("Missing Blockfrost API Key or Network Environment in .env");

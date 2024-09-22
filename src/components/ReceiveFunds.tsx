@@ -7,15 +7,11 @@ import { useState } from "react";
 
 // Function to initialize Lucid with Blockfrost
 const initLucid = async () => {
-  const blockfrostApiKey = process.env.BLOCKFROST_API_KEY!;
+  const blockfrostApiKey = process.env.NEXT_PUBLIC_BLOCKFROST_KEY_PREPROD!;
   const networkEnv = process.env.NEXT_PUBLIC_NETWORK_ENV!;
 
-  if (!blockfrostApiKey || !networkEnv) {
-    throw new Error("Missing Blockfrost API Key or Network Environment in .env");
-  }
-
   const lucid = await Lucid(
-    new Blockfrost(`https://cardano-${networkEnv.toLowerCase()}.blockfrost.io/api/v0`, blockfrostApiKey),
+    new Blockfrost(`https://cardano-${process.env.NEXT_PUBLIC_NETWORK_ENV!.toLowerCase()}.blockfrost.io/api/v0`, blockfrostApiKey),
     networkEnv as "Preprod" | "Mainnet"
   );
 
@@ -32,23 +28,64 @@ const ReceiveFunds = () => {
   const handleReceiveFunds = async () => {
     if (isConnected && enabledWallet) {
       try {
+        setStatus("Fetching UTxOs...");
+
+        // Initialize Lucid and select the wallet
         const lucid = await initLucid();
         const api = await window.cardano[enabledWallet].enable();
         lucid.selectWallet.fromAPI(api);
 
-        // Fetch transaction details from the server
-        const response = await fetch("/api/redeem", {
-          method: "POST",
-          headers: {
-            "Content-Type": "application/json",
-          },
-          body: JSON.stringify({ address: usedAddresses[0] }),
+        const contractHash = process.env.NEXT_PUBLIC_CONTRACT_HASH;
+        if (!contractHash) {
+          throw new Error("Missing contract hash in environment variables");
+        }
+
+        // Fetch UTxOs at the contract address
+        const allUTxOs = await lucid.utxosAt(contractHash);
+
+        if (allUTxOs.length === 0) {
+          throw new Error("No UTxOs found at the contract address");
+        }
+
+        // Simplified: Decode the datum from the UTxO to find the correct one
+        const ownerUTxO = allUTxOs.find((utxo) => {
+          if (utxo.datum) {
+            const datum = Data.from(utxo.datum, {
+              participants: 'list<bytes>',
+            });
+
+            return datum.participants.includes(usedAddresses[0]);
+          }
         });
 
-        const { tx } = await response.json();
+        if (!ownerUTxO) {
+          throw new Error("No UTxO found for the winner");
+        }
 
-        // Sign and submit the transaction
-        const signedTx = await lucid.fromTx(tx).sign.withWallet().complete();
+        // Define the redeemer as a proper Data structure
+        const redeemer = Data.to(new Map([["winner_index", BigInt(0)]])); // Map format for redeemer
+
+        // Load the spending validator (your Plutus script)
+        const compiledContract = process.env.NEXT_PUBLIC_COMPILED_CONTRACT_CBOR;
+        if (!compiledContract) {
+          throw new Error("Missing compiled contract in environment variables");
+        }
+
+        // Create the transaction to collect from the UTxO
+        const tx = await lucid
+          .newTx()
+          .collectFrom([ownerUTxO], redeemer) // Pass the correctly structured redeemer
+          .attach.SpendingValidator({
+            type: "PlutusV3", // Example, replace with actual type if different
+            script: compiledContract, // Attach the validator script
+          })
+          .addSigner(usedAddresses[0]) // Add the winner's address as the signer
+          .complete();
+
+        // Sign the transaction
+        const signedTx = await tx.sign.withWallet().complete();
+
+        // Submit the transaction
         const txHash = await signedTx.submit();
 
         setStatus(`Funds redeemed successfully. Tx Hash: ${txHash}`);
@@ -65,16 +102,31 @@ const ReceiveFunds = () => {
   };
 
   return (
-    <div className="flex flex-col items-center gap-3 sm:gap-6 lg:gap-8">
+    <div className="flex flex-col items-center bg-white shadow-lg rounded-lg p-8 max-w-md mx-auto mt-12">
+      <h2 className="text-2xl font-semibold text-gray-900 mb-4">Retrait</h2>
+      <p className="text-sm text-gray-600 mb-6">
+        Redeem the funds you are eligible for from the Tontine contract on the Cardano blockchain.
+      </p>
+
       {isConnected ? (
         <>
-          <button className="btn btn-primary" onClick={handleReceiveFunds}>
-            Redeem Tontine Funds
+          <button
+            className="w-full bg-green-600 text-white font-semibold py-2 px-4 rounded-md shadow hover:bg-green-700 transition-all duration-300"
+            onClick={handleReceiveFunds}
+            disabled={!!status && status.includes("Fetching")} // Disable button during fetching
+          >
+            {status.includes("Fetching") ? "Fetching UTxOs..." : "Redeem Funds"}
           </button>
-          {status && <p>{status}</p>}
+
+          {/* Status Message */}
+          {status && (
+            <div className={`mt-4 text-sm ${status.includes("Error") ? "text-red-500" : "text-green-500"}`}>
+              {status}
+            </div>
+          )}
         </>
       ) : (
-        <p>Please connect your wallet to redeem funds.</p>
+        <p className="text-sm text-gray-600">Please connect your wallet to redeem funds.</p>
       )}
     </div>
   );

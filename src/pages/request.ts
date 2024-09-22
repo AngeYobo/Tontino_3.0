@@ -8,43 +8,55 @@ export default async function handler(
   if (req.method === "POST") {
     try {
       const initLucid = () => {
-        if (process.env.NODE_ENV === "development") {
-          const b = new Blockfrost(
+        const networkEnv = process.env.NEXT_PUBLIC_NETWORK_ENV;
+
+        if (networkEnv === "Preprod") {
+          const blockfrostInstance = new Blockfrost(
             process.env.API_URL_PREPROD!,
-            process.env.BLOCKFROST_KEY_PREPROD!
+            process.env.NEXT_PUBLIC_BLOCKFROST_KEY_PREPROD!
           );
-          return Lucid(b, "Preprod");
-        } else {
-          const b = new Blockfrost(
+          return Lucid(blockfrostInstance, "Preprod");
+        } else if (networkEnv === "Mainnet") {
+          const blockfrostInstance = new Blockfrost(
             process.env.API_URL_MAINNET!,
-            process.env.BLOCKFROST_KEY_MAINNET!
+            process.env.NEXT_PUBLIC_BLOCKFROST_KEY_MAINNET!
           );
-          return Lucid(b, "Mainnet");
+          return Lucid(blockfrostInstance, "Mainnet");
+        } else {
+          throw new Error(`Unsupported network environment: ${networkEnv}`);
         }
       };
   
       const lucid = await initLucid();
       const data = req.body;
 
-      // Selecting wallet by address (requires UTxOs, in this example it's empty)
-      lucid.selectWallet.fromAddress(data.address, []);
-      const rewardAddress = await lucid.wallet().rewardAddress();
+      // Ensure the necessary address is provided
+      if (!data.address) {
+        res.status(400).json({ error: "Address is required" });
+        return;
+      }
 
-      // Build transaction
-      const tx = await lucid
-        .newTx()
-        .delegateTo(
-          rewardAddress!,
-          process.env.NODE_ENV === "development"
-            ? process.env.POOL_ID_PREPROD!
-            : process.env.POOL_ID_MAINNET!
-        )
+      // Selecting wallet by address (ensure UTxOs are fetched properly)
+      await lucid.selectWallet.fromAddress(data.address, []);
+
+      // Build your custom transaction here
+      const tx = await lucid.newTx()
+        .pay.ToAddress(data.address, { lovelace: BigInt(1000000n) })  // Example: paying 1 ADA to the address
         .complete();
 
-      // Return the transaction in CBOR format
-      res.status(200).json({ tx: tx.toCBOR() });
+      // Sign and submit the transaction
+      const signedTx = await tx.sign.withWallet().complete();
+      const txHash = await signedTx.submit();
+
+      // Return the transaction hash
+      res.status(200).json({ txHash });
     } catch (error) {
-      res.status(500).json({ error: "Transaction failed", details: error });
+      if (error instanceof Error) {
+        // Safely access error.message
+        res.status(500).json({ error: "Transaction failed", details: error.message });
+      } else {
+        res.status(500).json({ error: "Transaction failed", details: "Unknown error occurred" });
+      }
     }
   } else {
     // Handle unsupported HTTP methods

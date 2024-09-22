@@ -1,81 +1,86 @@
-"use client";
-
+import dynamic from 'next/dynamic';
 import React, { useEffect, useState } from "react";
 import { useCardano } from "@cardano-foundation/cardano-connect-with-wallet";
 import { NetworkType } from "@cardano-foundation/cardano-connect-with-wallet-core";
 import WalletModal from "./WalletModal";
+import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
+import { faWallet } from '@fortawesome/free-solid-svg-icons'; // Example icon for wallet
 
+// Désactiver SSR avec dynamic
 const WalletConnect = () => {
-  const network =
-    process.env.NODE_ENV === "development"
+  const networkEnv =
+    process.env.NEXT_PUBLIC_NETWORK_ENV === "Preprod"
       ? NetworkType.TESTNET
       : NetworkType.MAINNET;
 
   const { isConnected, usedAddresses, disconnect, accountBalance } = useCardano({
-    limitNetwork: network,
+    limitNetwork: networkEnv,
   });
 
-  const [showModal, setShowModal] = useState(false); // Manage modal visibility
+  const [showModal, setShowModal] = useState(false); // Gérer la visibilité du modal
 
+  // Formatage de l'adresse Cardano
   const formatAddress = (address: string | undefined) => {
     if (!address) return "Unknown Address";
     return `${address.slice(0, 6)}...${address.slice(-4)}`;
   };
 
+// Formatage du solde en ADA
   const formatBalance = (balance: number | string) => {
-    // Convert balance to string and multiply by 1,000,000 to avoid decimals
     const balanceInLovelace = Math.floor(Number(balance) * 1_000_000); 
-    const ada = BigInt(balanceInLovelace) / BigInt(1_000_000); // Convert to BigInt
+    const ada = BigInt(balanceInLovelace) / BigInt(1_000_000n); // Conversion en ADA
     return `${ada.toString()} ADA`;
   };
-  
 
+
+  // Effet pour vérifier la présence du wallet Cardano
   useEffect(() => {
-    if (typeof window !== "undefined") {
-      // Access window or other browser-specific APIs here
+    if (window?.cardano) {
+      console.log("Cardano wallet found");
+    } else {
+      console.log("Cardano wallet not found");
     }
-  }, []); // This will only run on the client
+  }, []);
 
   return (
-    <div className="flex items-center gap-3 sm:gap-6 lg:gap-8">
+    <div className="flex items-center gap-4 sm:gap-6 lg:gap-8">
       {isConnected ? (
-        <div className="flex items-center gap-3 sm:gap-6 lg:gap-8">
-          <h1>{formatAddress(usedAddresses?.[0])}</h1>
-          <h1>{formatBalance(accountBalance || "0")}</h1>
+        <div className="flex items-center gap-4 sm:gap-6 lg:gap-8 bg-gray-100 rounded-lg px-4 py-2">
+          {/* Display formatted address */}
+          <FontAwesomeIcon icon={faWallet} className="text-gray-500 w-6 h-6" />
+          <span className="font-semibold text-gray-700">{formatAddress(usedAddresses?.[0])}</span>
+
+          {/* Display balance in ADA */}
+          <span className="font-semibold text-gray-700">{formatBalance(accountBalance || "0")}</span>
+
+          {/* Disconnect Wallet Button */}
           <button
-            className="btn btn-square btn-outline"
+            className="bg-red-500 text-white py-2 px-4 rounded-full hover:bg-red-600 transition duration-300"
             onClick={() => {
-              disconnect();
+              try {
+                disconnect();
+              } catch (error) {
+                console.error("Error disconnecting wallet:", error);
+              }
             }}
           >
-            <svg
-              xmlns="http://www.w3.org/2000/svg"
-              className="h-6 w-6"
-              fill="none"
-              viewBox="0 0 24 24"
-              stroke="currentColor"
-            >
-              <path
-                strokeLinecap="round"
-                strokeLinejoin="round"
-                strokeWidth="2"
-                d="M6 18L18 6M6 6l12 12"
-              />
-            </svg>
+            DISCONNECT WALLET
           </button>
         </div>
       ) : (
-        <button className="btn btn-primary" onClick={() => setShowModal(true)}>
-          Connect Wallet
+        <button
+          className="bg-blue-500 text-white py-2 px-6 rounded-full hover:bg-blue-600 transition-all duration-300"
+          onClick={() => setShowModal(true)}
+        >
+          CONNECT WALLET
         </button>
       )}
 
-      {/* Modal for wallet connection */}
-      {showModal && (
-        <WalletModal onClose={() => setShowModal(false)} />
-      )}
+      {/* Modal pour la connexion au wallet */}
+      {showModal && <WalletModal onClose={() => setShowModal(false)} />}
     </div>
   );
 };
 
-export default WalletConnect;
+// Export dynamique pour désactiver le SSR
+export default dynamic(() => Promise.resolve(WalletConnect), { ssr: false });

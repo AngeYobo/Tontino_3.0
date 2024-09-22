@@ -14,7 +14,7 @@ const mapEnvToNetwork = (env: string): Network => {
 // Initialize Lucid with Blockfrost
 export const initLucid = async () => {
   const blockfrostApiKey = process.env.BLOCKFROST_KEY_PREPROD!;
-  const networkEnv = process.env.NETWORK_ENV!; 
+  const networkEnv = process.env.NEXT_PUBLIC_NETWORK_ENV!; 
   
   if (!blockfrostApiKey || !networkEnv) {
     throw new Error("Missing Blockfrost API Key or Network Environment in .env");

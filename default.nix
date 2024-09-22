@@ -1,7 +1,7 @@
 { pkgs ? import (fetchTarball "https://github.com/NixOS/nixpkgs/archive/nixpkgs-unstable.tar.gz") {} }:
 
 pkgs.mkShell {
-  name = "tontine-dapp-dev-env";
+  name = "tontino";
 
   buildInputs = [
     pkgs.nodejs-18_x  # Node.js 18.x version
@@ -11,6 +11,6 @@ pkgs.mkShell {
   ];
 
   shellHook = ''
-    echo "Welcome to the Tontine DApp development environment!"
+    echo "Welcome to the Tontino development environment!"
   '';
 }
