@@ -3,11 +3,10 @@
 
   inputs = {
     nixpkgs.url = "github:NixOS/nixpkgs/nixpkgs-unstable";  # Use the unstable channel
-    flake-utils.url = "github:numtide/flake-utils";
   };
 
-  outputs = { self, nixpkgs, flake-utils }:
-    flake-utils.lib.defaultFlakeOutputs self { inherit nixpkgs; } // {
+  outputs = { self, nixpkgs }:
+    {
       devShells = {
         default = nixpkgs.lib.mkShell {
           buildInputs = with nixpkgs; [
