@@ -2,7 +2,7 @@
   description = "Tontino DApp Development Environment";
 
   inputs = {
-    nixpkgs.url = "github:NixOS/nixpkgs/nixpkgs-unstable"; # Latest unstable version of Nixpkgs
+    nixpkgs.url = "github:NixOS/nixpkgs/nixos-23.05";  # A stable version
   };
 
   outputs = { self, nixpkgs }: let
