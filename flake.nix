@@ -2,17 +2,15 @@
   description = "Tontino DApp Development Environment";
 
   inputs = {
-    nixpkgs.url = "github:NixOS/nixpkgs/nixos-23.05";  # A stable version
+    nixpkgs.url = "github:NixOS/nixpkgs/nixpkgs-unstable";  # Reference to the Nix packages
   };
 
   outputs = { self, nixpkgs }: let
-    # Define a reusable function for fetching pkgs for the target system
-    pkgsForSystem = system: import nixpkgs {
-      inherit system;
-    };
+    # Fetch packages for the system architecture
+    pkgsForSystem = system: import nixpkgs { inherit system; };
   in {
-    # Define development shells for different systems
     devShells = {
+      # Define a shell for x86_64-linux
       x86_64-linux = pkgsForSystem "x86_64-linux".mkShell {
         buildInputs = with pkgsForSystem "x86_64-linux"; [
           nodejs-18_x   # Node.js 18.x version
@@ -26,15 +24,7 @@
         '';
       };
 
-      # Optional: If you are targeting additional platforms (e.g., aarch64, Darwin):
-      # aarch64-linux = pkgsForSystem "aarch64-linux".mkShell {
-      #   buildInputs = with pkgsForSystem "aarch64-linux"; [
-      #     nodejs-18_x
-      #     pnpm
-      #     git
-      #     aiken
-      #   ];
-      # };
+      # Add any additional system architectures here if needed (e.g., aarch64-linux)
     };
   };
 }
