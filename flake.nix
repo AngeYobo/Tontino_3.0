@@ -7,12 +7,12 @@
 
   outputs = { self, nixpkgs }: {
     devShells = {
-      x86_64-linux = nixpkgs.legacyPackages.x86_64-linux.stdenv.mkShell {
-        buildInputs = with nixpkgs; [
-          nodejs-18_x      # Node.js 18.x version
-          pnpm             # pnpm package manager
-          git              # Git for version control
-          aiken            # Aiken for smart contract development
+      x86_64-linux = nixpkgs.mkDevShell {
+        packages = [
+          nixpkgs.nodejs-18_x      # Node.js 18.x version
+          nixpkgs.pnpm             # pnpm package manager
+          nixpkgs.git              # Git for version control
+          nixpkgs.aiken            # Aiken for smart contract development
         ];
 
         shellHook = ''
