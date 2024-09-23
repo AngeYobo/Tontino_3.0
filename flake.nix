@@ -2,17 +2,24 @@
   description = "Tontino DApp Development Environment";
 
   inputs = {
-    nixpkgs.url = "github:NixOS/nixpkgs/nixpkgs-unstable";  # Use the unstable channel
+    nixpkgs.url = "github:NixOS/nixpkgs/nixpkgs-unstable";  # Fetch from nixpkgs unstable
   };
 
-  outputs = { self, nixpkgs }: {
+  outputs = { self, nixpkgs }:
+  let
+    # Define the package set
+    pkgs = import nixpkgs {
+      system = "x86_64-linux";
+    };
+  in {
     devShells = {
-      x86_64-linux = nixpkgs.pkgs.stdenv.mkShell {
-        buildInputs = with nixpkgs; [
-          nodejs-18_x      # Node.js 18.x version
-          pnpm             # pnpm package manager
-          git              # Git for version control
-          aiken            # Aiken for smart contract development
+      # Define dev shell for x86_64-linux
+      x86_64-linux = pkgs.mkShell {
+        buildInputs = with pkgs; [
+          nodejs-18_x
+          pnpm
+          git
+          aiken
         ];
 
         shellHook = ''
