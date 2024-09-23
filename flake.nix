@@ -2,18 +2,19 @@
   description = "Tontino DApp Development Environment";
 
   inputs = {
-    nixpkgs.url = "github:NixOS/nixpkgs/nixpkgs-unstable";
+    nixpkgs.url = "github:NixOS/nixpkgs/nixpkgs-unstable"; # Latest unstable version of Nixpkgs
   };
 
   outputs = { self, nixpkgs }: let
-    pkgs = import nixpkgs {
-      system = "x86_64-linux"; # Your system architecture
+    # Define a reusable function for fetching pkgs for the target system
+    pkgsForSystem = system: import nixpkgs {
+      inherit system;
     };
   in {
-    # Define development shells for different platforms
+    # Define development shells for different systems
     devShells = {
-      x86_64-linux = pkgs.mkShell {
-        buildInputs = with pkgs; [
+      x86_64-linux = pkgsForSystem "x86_64-linux".mkShell {
+        buildInputs = with pkgsForSystem "x86_64-linux"; [
           nodejs-18_x   # Node.js 18.x version
           pnpm          # pnpm package manager
           git           # Git for version control
@@ -24,6 +25,16 @@
           echo "Welcome to the Tontino development environment!"
         '';
       };
+
+      # Optional: If you are targeting additional platforms (e.g., aarch64, Darwin):
+      # aarch64-linux = pkgsForSystem "aarch64-linux".mkShell {
+      #   buildInputs = with pkgsForSystem "aarch64-linux"; [
+      #     nodejs-18_x
+      #     pnpm
+      #     git
+      #     aiken
+      #   ];
+      # };
     };
   };
 }
