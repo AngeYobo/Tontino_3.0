@@ -38,8 +38,8 @@ Unlike traditional tontines where funds sit idle, Tontine 3.0 integrates DeFi st
 #### 3. Types of Tontines Supported
 Tontine 3.0 offers multiple customizable tontine models to cater to various financial needs:
 
-- Tontine d’Accumulation (ASCA): Contributions are pooled and invested in DeFi strategies. At the end of the cycle, the pool, along with accumulated interest, is redistributed to members.
-- Tontine Rotative (ROSCA): Funds are distributed to participants on a rotating basis, providing liquidity to one member at a time. In this model, the pool can be staked to earn additional rewards.
+- Accumulation Tontine (ASCA): Contributions are pooled and invested in DeFi strategies. At the end of the cycle, the pool, along with accumulated interest, is redistributed to members.
+- Rotative Tontine (ROSCA): Funds are distributed to participants on a rotating basis, providing liquidity to one member at a time. In this model, the pool can be staked to earn additional rewards.
 - Tontine with Variable Contributions: Members can contribute varying amounts, and rewards are distributed proportionally based on the size of each contribution.
 - Solidarity Tontine: A portion of the pool is allocated to help members in need before the distribution cycle begins.
 - Auction-Based Tontine: Members bid for early access to the pool, creating a competitive environment and ensuring optimal allocation of funds.
