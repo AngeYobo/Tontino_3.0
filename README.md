@@ -1,6 +1,6 @@
 # Tontine 3.0: Reinventing Community Savings on the Cardano Blockchain
 
-Abstract:  
+### Abstract:  
 Tontine, a time-honored system of community savings, has enabled collective financial empowerment for centuries. Its simplicity and trust among members have driven its success, but inherent issues like lack of transparency, fraud risks, and fixed returns have persisted.
 
 Tontine 3.0 is a decentralized platform built on the Cardano blockchain to modernize and address the limitations of traditional tontines. By incorporating the power of smart contracts, blockchain transparency, and DeFi (Decentralized Finance), Tontine 3.0 offers a system that is not only safer but also more profitable and dynamic for all participants. This lightpaper outlines the evolution of tontines, the key innovations brought by blockchain technology, and the roadmap for Tontine 3.0.
