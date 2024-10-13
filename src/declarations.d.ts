@@ -12,7 +12,7 @@ declare module "@emurgo/cardano-multiplatform-lib-browser"
 interface Cardano {
   name: string;
   icon: string;
-  enable: () => Promise<any>;
+  enable: () => Promise<unknown>; // Changed 'any' to 'unknown'
   // Add more properties and methods as needed
 }
 

@@ -22,7 +22,7 @@ const HeroSection = () => {
         {/* Right Section - Image */}
         <div className="relative lg:w-1/2 mt-10 lg:mt-0 flex justify-center">
           <Image
-            src="/assets/Comm.webp" // Mettre à jour le chemin de l'image
+            src="/assets/Comm.jpg" // Mettre à jour le chemin de l'image
             alt="Hero Section Image"
             width={600}
             height={600}

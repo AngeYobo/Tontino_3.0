@@ -3,10 +3,11 @@ import React from "react";
 import NavBar from "./NavBar";
 import Footer from "./Footer";
 import { useCardano } from "@cardano-foundation/cardano-connect-with-wallet";
-import HeroSection from "./HeroSection";
-import FeaturesSection from "./FeaturesSection"; 
-import JoinCommunitySection from "./JoinCommunitySection"; 
-import TontineTypesSection from "./TontineTypesSection"
+// import HeroSection from "./HeroSection";
+// import FeaturesSection from "./FeaturesSection"; 
+//import JoinCommunitySection from "./JoinCommunitySection"; 
+//import TontineTypesSection from "./TontineTypesSection"
+
 
 
 type MainProps = {
@@ -27,13 +28,15 @@ export default function Main({ children }: MainProps) {
           <div>
             {children} {/* Only render the DApp functionality when connected */}
           </div>
+
         ) : (
           // If the wallet is NOT connected, show the landing page
           <>
-            <HeroSection />
+            {/* <HeroSection />
             <TontineTypesSection/>
             <FeaturesSection />
-            <JoinCommunitySection />
+            <JoinCommunitySection /> */}
+           
           </>
         )}
       </main>

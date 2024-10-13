@@ -2,10 +2,11 @@
 const nextConfig = {
   webpack: (config) => {
     // Enable WebAssembly
-    config.experiments = {
-      ...config.experiments,
+    config.experiments = { 
       asyncWebAssembly: true,
-    };
+      topLevelAwait: true,
+      layers: true
+    }
 
     return config;
   },

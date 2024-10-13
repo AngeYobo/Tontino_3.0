@@ -6,7 +6,7 @@ import Image from "next/image";
 
 declare global {
   interface Window {
-    my_modal: any;
+    my_modal: HTMLDialogElement;
   }
 }
 

@@ -1,7 +1,6 @@
 // src/components/Footer.tsx
 import React from 'react';
-import SocialMediaLinks from '@/components/SocialMediaLinks'; // Adjust the import path if needed
-
+import SocialMediaLinks from '@/components/SocialMediaLinks';
 export default function Footer() {
   return (
     <footer className="bg-gray-900 text-white py-10">
@@ -10,7 +9,7 @@ export default function Footer() {
         {/* Left Section - Brand and Slogan */}
         <div className="mb-6 md:mb-0">
           <h2 className="text-xl font-semibold">Tontine DApp</h2>
-          <p className="text-sm text-gray-400">Built with Lucid-Evolution on Cardano by Eburnie Labs.</p>
+          <p className="text-sm text-gray-400">Built with Lucid-Evolution .</p>
         </div>
         
         {/* Middle Section - Links */}

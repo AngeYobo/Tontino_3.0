@@ -1,7 +1,10 @@
-import React from "react";
-import WalletConnect from "./WalletConnect";
+import dynamic from "next/dynamic";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faDiscord, faGithub } from "@fortawesome/free-brands-svg-icons";
+
+const WalletConnect = dynamic(() => import("./WalletConnect"), {
+  ssr: false,
+});
 
 export default function NavBar() {
   return (
@@ -11,7 +14,7 @@ export default function NavBar() {
         {/* Logo or Title */}
         <h1 className="text-3xl font-bold tracking-tight text-gray-900">
           <a href="/" className="hover:text-accent transition duration-200">
-            Tontine - PROJECT
+            Tontine
           </a>
         </h1>
 

@@ -7,11 +7,11 @@ import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faWallet } from '@fortawesome/free-solid-svg-icons'; // Example icon for wallet
 
 // Désactiver SSR avec dynamic
-const WalletConnect = () => {
-  const networkEnv =
-    process.env.NEXT_PUBLIC_NETWORK_ENV === "Preprod"
-      ? NetworkType.TESTNET
-      : NetworkType.MAINNET;
+  const WalletConnect = () => {
+    const networkEnv =
+      process.env.NEXT_PUBLIC_NETWORK_ENV === "Preprod"
+        ? NetworkType.TESTNET
+        : NetworkType.MAINNET;
 
   const { isConnected, usedAddresses, disconnect, accountBalance } = useCardano({
     limitNetwork: networkEnv,

@@ -1,4 +1,4 @@
-import { Lucid, Blockfrost, SpendingValidator, validatorToAddress, Data, getAddressDetails, Constr } from "@lucid-evolution/lucid";
+import { Lucid, Blockfrost, SpendingValidator, validatorToAddress, Data, Constr, getAddressDetails } from "@lucid-evolution/lucid";
 import { useCardano } from "@cardano-foundation/cardano-connect-with-wallet";
 import { NetworkType } from "@cardano-foundation/cardano-connect-with-wallet-core";
 import React, { useState } from "react";
@@ -28,23 +28,23 @@ const getPublicKeyHashFromAddress = (address: string): Uint8Array | null => {
   }
 };
 
-const Contribute = () => {
+const WinnerRedeem = () => {
   const networkEnv =
     process.env.NEXT_PUBLIC_NETWORK_ENV === "Preprod"
       ? NetworkType.TESTNET
       : NetworkType.MAINNET;
 
-  const { isConnected, enabledWallet } = useCardano({
+  const { isConnected, enabledWallet, address } = useCardano({
     limitNetwork: networkEnv,
   });
 
-  const [amountInAda, setAmountInAda] = useState<number | string>("");  // Input in ADA
   const [isLoading, setIsLoading] = useState(false);
   const [txHash, setTxHash] = useState<string | null>(null);
   const [errorMessage, setErrorMessage] = useState<string | null>(null);
+  const [winnerIndex, setWinnerIndex] = useState<number | string>("");
 
-  const handleContribute = async () => {
-    if (!isConnected || !enabledWallet || !amountInAda || isNaN(Number(amountInAda))) {
+  const handleRedeem = async () => {
+    if (!isConnected || !enabledWallet || isNaN(Number(winnerIndex))) {
       setErrorMessage("Invalid input or wallet not connected.");
       return;
     }
@@ -84,6 +84,10 @@ const Contribute = () => {
       const walletAddress = await lucid.wallet().address();
       console.log("Connected Wallet Address:", walletAddress);
 
+      // Redeemer with winner index
+      const redeemer = Data.to(new Constr(0, [BigInt(winnerIndex)]));
+      console.log("winnerIndex:", winnerIndex);
+
       const participants = [
         getPublicKeyHashFromAddress("addr_test1qzqj3u3u407gl4jnaujm6w78awnes4rk5pq6extz67ey0urymfwmlan75sp4fm5e5tnfdhzz7lnvq06qkdj7kec5ntds7azxt0"),
         getPublicKeyHashFromAddress("addr_test1qzxm3w8cr2t0da7r6jh5n0h4c49mur07xkjq3l2wu6xhguu0x7zxuq8e6wnvmx67tmkpr7de0guxez98c2knvpmnwmnq4ws9qt"),
@@ -91,26 +95,23 @@ const Contribute = () => {
         .filter((participant): participant is Uint8Array => participant !== null)
         .map((participant) => Data.to(Buffer.from(participant).toString("hex")));
 
-      const datum = Data.to(new Constr(0, participants));
+      // Pass the array directly, no need for Data.list
+      const datum = Data.to(new Constr(0, [participants])); // Properly convert Datum
       console.log("PARTICIPANTS: ", participants);
       console.log("Datum: ", datum);
 
-      const utxos = await lucid.wallet().getUtxos();
-      // const stateTokenUtxo = utxos.find(utxo => utxo.assets["cbdfd7bce097ec3041a4dafb68621cdf88eef0caecd89b19bfd657155374617465546f6b656e"]);
-      // console.log("Token: ", stateTokenUtxo);
-      // console.log("UTXOS:", utxos);
-
-      // if (!stateTokenUtxo) {
-      //   throw new Error("State token UTXO not found in wallet.");
-      // }
-
-      // Convert ADA to Lovelace
-      const amountInLovelace = BigInt(Number(amountInAda) * 1_000_000);
+      const utxos = await lucid.utxosAt(contractAddress);
+      if (utxos.length === 0) {
+        throw new Error("No UTxOs found at the contract address.");
+      }
+      const stateTokenUtxo = utxos[0]; // Assuming UTXO exists, fetch the first one
+      console.log("UTXOS:", utxos);
 
       const tx = await lucid.newTx()
-        // .collectFrom([stateTokenUtxo])
-        .pay.ToAddressWithData(contractAddress, { kind: "inline", value: datum }, { lovelace: amountInLovelace })
-        .attach.SpendingValidator(validator)
+        .collectFrom([stateTokenUtxo], redeemer) // Properly attach the redeemer
+        .pay.ToAddress(walletAddress, { lovelace: BigInt(2000000) }) // Pays 2 ADA to the winner's wallet
+        .attach.SpendingValidator(validator) // Attach the spending validator
+        
         .complete();
 
       const signedTx = await tx.sign.withWallet().complete();
@@ -119,40 +120,40 @@ const Contribute = () => {
 
     } catch (error: unknown) {
       if (error instanceof Error) {
-          setErrorMessage(error.message);
-          console.error("Error contributing funds:", error.message);
-      } else if (typeof error === 'object' && error !== null) {
-          const errorObject = JSON.stringify(error, Object.getOwnPropertyNames(error));
-          setErrorMessage(errorObject);
-          console.error("Error contributing funds:", errorObject);
+        setErrorMessage(error.message);
+        console.error("Error redeeming funds:", error.message);
+      } else if (typeof error === "object" && error !== null) {
+        const errorObject = JSON.stringify(error, Object.getOwnPropertyNames(error));
+        setErrorMessage(errorObject);
+        console.error("Error redeeming funds:", errorObject);
       } else {
-          setErrorMessage("An unknown error occurred.");
-          console.error("Unknown error contributing funds:", error);
+        setErrorMessage("An unknown error occurred.");
+        console.error("Unknown error redeeming funds:", error);
       }
     } finally {
-      setIsLoading(false);  // Stop processing after transaction completes
+      setIsLoading(false); 
     }
   };
 
   return (
     <div className="w-full max-w-md mx-auto p-6 bg-white rounded shadow-lg mt-10">
-      <h2 className="text-2xl font-semibold mb-6 text-center">Dépôt</h2>
+      <h2 className="text-2xl font-semibold mb-6 text-center">Redeem Tontine Winnings</h2>
       <div className="mb-4">
         <input
           type="number"
-          placeholder="Amount in ADA"
-          value={amountInAda}
-          onChange={(e) => setAmountInAda(e.target.value)}
+          placeholder="Winner Index"
+          value={winnerIndex}
+          onChange={(e) => setWinnerIndex(e.target.value)}
           className="w-full p-3 border border-gray-300 rounded focus:outline-none focus:ring focus:border-blue-300"
         />
       </div>
       <div className="mb-4">
         <button
           className={`w-full p-3 text-white font-semibold rounded ${isLoading ? "bg-gray-500 cursor-not-allowed" : "bg-blue-500 hover:bg-blue-600"}`}
-          onClick={handleContribute}
+          onClick={handleRedeem}
           disabled={isLoading}
         >
-          {isLoading ? "Processing..." : "Contribute"}
+          {isLoading ? "Processing..." : "Redeem"}
         </button>
       </div>
       {txHash && (
@@ -178,4 +179,4 @@ const Contribute = () => {
   );
 };
 
-export default dynamic(() => Promise.resolve(Contribute), { ssr: false });
+export default dynamic(() => Promise.resolve(WinnerRedeem), { ssr: false });
