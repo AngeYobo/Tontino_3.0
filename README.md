@@ -27,8 +27,7 @@ Tontine 3.0 turns a stagnant savings mechanism into a dynamic, yield-generating 
 
 ---
 ##### Tontine 3.0 overview
-![image](https://github.com/user-attachments/assets/a2df82b8-3906-4568-8a9c-6a8eb808279f)
-
+![image](https://github.com/user-attachments/assets/98d1bc35-f399-42db-9f4a-80aa27b0f507)
 
 ---
 ### Key Features of Tontine 3.0
