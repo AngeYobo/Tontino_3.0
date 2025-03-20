@@ -27,6 +27,10 @@ Tontine 3.0 turns a stagnant savings mechanism into a dynamic, yield-generating 
 
 ---
 
+---
+
+![image](https://github.com/user-attachments/assets/762a894c-8d3e-4410-a393-905691d5448e)
+
 ### Key Features of Tontine 3.0
 
 #### 1. Decentralized and Transparent Operations
@@ -44,12 +48,12 @@ Tontine 3.0 offers multiple customizable tontine models to cater to various fina
 - Solidarity Tontine: A portion of the pool is allocated to help members in need before the distribution cycle begins.
 - Auction-Based Tontine: Members bid for early access to the pool, creating a competitive environment and ensuring optimal allocation of funds.
 
-#### 4. CIP-721 NFT Integration
-Tontine 3.0 integrates CIP-721 NFTs to represent each participant's involvement in the tontine. Every participant receives a CIP-721 NFT upon joining, representing their share in the pool. These NFTs ensure transparency, security, and verifiability of each member's participation:
+#### 4. CIP-68 NFT Integration
+Tontine 3.0 integrates CIP-68 NFTs to represent each participant's involvement in the tontine. Every participant receives a CIP-68 NFT upon joining, representing their share in the pool. These NFTs ensure transparency, security, and verifiability of each member's participation:
 
-- Ownership Representation: Each tontine participant is issued a CIP-721 NFT, representing their contribution and rights.
+- Ownership Representation: Each tontine participant is issued a CIP-68 NFT, representing their contribution and rights.
 - Proof of Participation: The NFT acts as a transparent ledger of the member's participation, ensuring trustless verification.
-- State Token: The CIP-721 NFT also represents the tontine’s current state (e.g., winner, distribution progress), enabling seamless tracking.
+- State Token: The CIP-68 NFT also represents the tontine’s current state (e.g., winner, distribution progress), enabling seamless tracking.
 
 #### 5. DAO-Driven Governance
 Tontine 3.0 introduces a Decentralized Autonomous Organization (DAO) where participants can propose and vote on governance matters, such as rule changes, investment strategies, and conflict resolution. Each participant holds governance tokens, proportional to their contribution, which grants them voting power in the DAO. This ensures that the community drives the evolution of the tontine in a decentralized and democratic manner.
